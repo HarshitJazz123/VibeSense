@@ -1,5 +1,3 @@
-# VibeSense
-Multi-sensor industrial predictive maintenance system — ESP32-S3, edge ML, custom PCB
 # VibeSense Pro
 
 Industrial-grade multi-sensor predictive maintenance system — 6-sensor fusion,
