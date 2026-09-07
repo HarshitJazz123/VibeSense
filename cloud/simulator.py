@@ -3,7 +3,9 @@ import time
 import random
 import paho.mqtt.client as mqtt
 
+# ============================================================
 # HiveMQ Configuration
+# ============================================================
 
 BROKER_HOST = "9dfd4467e7294b6484f873164993a9f4.s1.eu.hivemq.cloud"
 BROKER_PORT = 8883
@@ -12,9 +14,10 @@ USERNAME = "VibeSense2026"
 PASSWORD = "VibeSense@2026"
 
 TOPIC_TELEMETRY = "vibesense/node01/telemetry"
-TOPIC_EVENTS = "vibesense/node01/events"
 
+# ============================================================
 # MQTT Client
+# ============================================================
 
 client = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
@@ -32,112 +35,106 @@ client.connect(BROKER_HOST, BROKER_PORT)
 # Start MQTT network loop
 client.loop_start()
 
-# Machine State
-
-state = "NORMAL"
-fault_step = 0
-
-# Keep False for the first test
-in_fault = True
-
-
 print("Simulator running. Press Ctrl+C to stop.")
 
-
+# ============================================================
 # Main Loop
+# ============================================================
 
 try:
 
     while True:
 
-        # Generate vibration
-        
-        if not in_fault:
+        # ----------------------------------------------------
+        # Generate telemetry
+        # ----------------------------------------------------
 
-            rms = round(
-                random.uniform(0.07, 0.09),
-                3
-            )
+        vibration = round(
+            random.uniform(0.9, 1.2),
+            3
+        )
 
-        else:
+        rpm = 12800 + random.randint(-100, 100)
 
-            fault_step += 1
+        current = round(
+            random.uniform(1.7, 1.9),
+            2
+        )
 
-            rms = round(
-                0.09 + fault_step * 0.05,
-                3
-            )
+        temperature = round(
+            random.uniform(32.0, 33.0),
+            1
+        )
 
-            if fault_step == 5:
-                state = "SUSPECT"
+        humidity = round(
+            random.uniform(80.0, 86.0),
+            1
+        )
 
-            if fault_step >= 15:
-                state = "CONFIRMED"
+        mic_range = random.randint(800, 900)
 
+        motor_temperature = round(
+            random.uniform(33.5, 35.0),
+            1
+        )
 
-        # Create telemetry payload
-        
+        confidence = round(
+            random.uniform(0.90, 0.97),
+            2
+        )
+
+        # ----------------------------------------------------
+        # Complete VibeSense telemetry contract
+        # ----------------------------------------------------
+
         payload = {
 
             "dev": "node01",
 
             "ts": int(time.time()),
 
-            "cls": 1 if in_fault else 0,
+            "state": "NORMAL",
 
-            "cls_name":
-                "inner_race"
-                if in_fault
-                else "healthy",
+            "cls_name": "healthy",
 
-            "state": state,
+            "conf": confidence,
 
-            "conf": round(
-                random.uniform(0.85, 0.97),
-                2
-            ),
+            "vib": vibration,
 
-            "rms": rms,
+            "rpm": rpm,
 
-            "temp": round(
-                41 + random.uniform(-0.3, 0.3),
-                1
-            ),
+            "mic_range": mic_range,
 
-            "amps": round(
-                1.8 + random.uniform(-0.1, 0.1),
-                2
-            ),
+            "curr": current,
 
-            "rpm":
-                2140 + random.randint(-20, 20),
+            "temp": temperature,
 
-            "anom": round(
-                random.uniform(0.5, 5.0),
-                1
-            ),
+            "hum": humidity,
 
-            "mv": "v3"
+            "motor_temp": motor_temperature
         }
 
-        # Publish JSON to HiveMQ
-        
+        # ----------------------------------------------------
+        # Publish telemetry
+        # ----------------------------------------------------
+
         client.publish(
             TOPIC_TELEMETRY,
             json.dumps(payload)
         )
 
-        # Show data in terminal
+        # ----------------------------------------------------
+        # Terminal output
+        # ----------------------------------------------------
+
         print(json.dumps(payload))
 
-
-        # Send one message per second
+        # One message per second
         time.sleep(1)
-
 
 except KeyboardInterrupt:
 
-    print("Stopping simulator.")
+    print("\nStopping simulator...")
 
     client.loop_stop()
     client.disconnect()
