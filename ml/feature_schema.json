@@ -1,0 +1,13 @@
+{
+    "features": [
+        "amps",
+        "rms",
+        "rpm",
+        "temperature"
+    ],
+    "target": "class_name",
+    "classes": [
+        "healthy",
+        "inner_race"
+    ]
+}

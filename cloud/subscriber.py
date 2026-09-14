@@ -2,6 +2,7 @@ import json
 import paho.mqtt.client as mqtt
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.client.write_api import WritePrecision
 
 # ============================================================
 # HiveMQ Configuration
@@ -20,7 +21,7 @@ TOPIC_TELEMETRY = "vibesense/node01/telemetry"
 # ============================================================
 
 INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "OnMRoIq7kbM8IZmDCNcsrlEmEdyJcC93o9eDH0fe5VVRHUjBKBSARFYBjSaJGTyq6Uv2cNpNMPKxqV0VLPhLrw=="
+INFLUXDB_TOKEN = "g0325lri35pr71Df7AoF7PvA55lOm83Oqn-O7TBpMWsCF5vxarqYzG-JKzZVAA8sf4CnMZN4GZWTJWhV3yv8xg=="
 INFLUXDB_ORG = "vibesense-org"
 INFLUXDB_BUCKET = "vibesense"
 
@@ -38,12 +39,12 @@ write_api = influx_client.write_api(
     write_options=SYNCHRONOUS
 )
 
-
 # ============================================================
 # MQTT Callbacks
 # ============================================================
 
 def on_connect(client, userdata, flags, reason_code, properties):
+
     print("Connected to HiveMQ.")
     print("Subscribing to:", TOPIC_TELEMETRY)
 
@@ -56,37 +57,71 @@ def on_message(client, userdata, msg):
 
     try:
 
+        # ----------------------------------------------------
         # Decode MQTT message
+        # ----------------------------------------------------
+
         payload = json.loads(msg.payload.decode())
 
         print("\nReceived telemetry:")
         print(json.dumps(payload, indent=2))
 
         # ----------------------------------------------------
+        # Validate required telemetry
+        # ----------------------------------------------------
+
+        required_fields = [
+            "dev",
+            "ts",
+            "vib",
+            "rpm",
+            "curr",
+            "temp",
+            "hum"
+        ]
+
+        for field in required_fields:
+
+            if field not in payload:
+                raise ValueError(
+                    f"Missing required field: {field}"
+                )
+
+        # ----------------------------------------------------
         # Create InfluxDB data point
         # ----------------------------------------------------
 
         point = (
-            Point("machine_telemetry")
+            Point("telemetry")
 
             # Tags
-            .tag("device", payload["dev"])
-            .tag("state", payload["state"])
-            .tag("class_name", payload["cls_name"])
+            .tag("device", str(payload["dev"]))
+            .tag("state", str(payload["state"]))
+            .tag("class_name", str(payload["cls_name"]))
 
-            # Fields
-            .field("class", payload["cls"])
-            .field("confidence", payload["conf"])
-            .field("rms", payload["rms"])
-            .field("temperature", payload["temp"])
-            .field("amps", payload["amps"])
-            .field("rpm", payload["rpm"])
-            .field("anomaly_score", payload["anom"])
-            .field("model_version", payload["mv"])
+            # Main Grafana metrics
+            .field("vibration", float(payload["vib"]))
+            .field("rpm", float(payload["rpm"]))
+            .field("current", float(payload["curr"]))
+            .field("temperature", float(payload["temp"]))
+            .field("humidity", float(payload["hum"]))
 
+            # Additional data retained for future use
+            .field("confidence", float(payload["conf"]))
+            .field("mic_range", float(payload["mic_range"]))
+            .field("motor_temperature", float(payload["motor_temp"]))
+
+            # Use sensor timestamp
+            .time(
+                int(payload["ts"]),
+                WritePrecision.S
+            )
         )
 
+        # ----------------------------------------------------
         # Write to InfluxDB
+        # ----------------------------------------------------
+
         write_api.write(
             bucket=INFLUXDB_BUCKET,
             org=INFLUXDB_ORG,
@@ -94,6 +129,10 @@ def on_message(client, userdata, msg):
         )
 
         print("✓ Written to InfluxDB")
+
+    except json.JSONDecodeError:
+
+        print("ERROR: Invalid JSON received")
 
     except Exception as e:
 
@@ -121,7 +160,6 @@ client.tls_set()
 client.on_connect = on_connect
 client.on_message = on_message
 
-
 # ============================================================
 # Connect
 # ============================================================
@@ -132,7 +170,6 @@ client.connect(
     BROKER_HOST,
     BROKER_PORT
 )
-
 
 # ============================================================
 # Start MQTT loop
