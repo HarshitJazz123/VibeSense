@@ -2,16 +2,20 @@ import json
 import time
 import random
 import paho.mqtt.client as mqtt
+import os
+from dotenv import load_dotenv
 
 # ============================================================
 # HiveMQ Configuration
 # ============================================================
 
-BROKER_HOST = "ec7cd44163ed405db4f161ea52525f11.s1.eu.hivemq.cloud"
-BROKER_PORT = 8883
+load_dotenv()
 
-USERNAME = "vibesense_node01"
-PASSWORD = "VibeSense2026!"
+BROKER_HOST = os.environ["MQTT_HOST"]
+BROKER_PORT = int(os.getenv["MQTT_HOST", "8883"])
+USERNAME    = os.environ["MQTT_USER"]
+PASSWORD    = os.environ["MQTT_PASS"]
+INFLUXDB_TOKEN = os.environ["INFLUX_TOKEN"]
 
 TOPIC_TELEMETRY = "vibesense/node01/telemetry"
 
