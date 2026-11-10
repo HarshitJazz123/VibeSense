@@ -8,11 +8,11 @@ from influxdb_client.client.write_api import WritePrecision
 # HiveMQ Configuration
 # ============================================================
 
-BROKER_HOST = "9dfd4467e7294b6484f873164993a9f4.s1.eu.hivemq.cloud"
+BROKER_HOST = "ec7cd44163ed405db4f161ea52525f11.s1.eu.hivemq.cloud"
 BROKER_PORT = 8883
 
-USERNAME = "VibeSense2026"
-PASSWORD = "VibeSense@2026"
+USERNAME = "vibesense_node01"
+PASSWORD = "VibeSense2026!"
 
 TOPIC_TELEMETRY = "vibesense/node01/telemetry"
 
