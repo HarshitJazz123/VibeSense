@@ -716,7 +716,7 @@
 //   delay(100);
 // }
 
-
+#include "secrets.h"
 #include <Wire.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -732,13 +732,7 @@
 #include <PubSubClient.h>
 
 // ================= WiFi + MQTT =================
-const char* ssid = "harshitj";
-const char* password_wifi = "14Feb2006";
 
-const char* mqtt_server = "ec7cd44163ed405db4f161ea52525f11.s1.eu.hivemq.cloud";
-const int mqtt_port = 8883;
-const char* mqtt_user = "vibesense_node01";
-const char* mqtt_pass = "VibeSense2026!";
 const char* mqtt_topic = "vibesense/node01/telemetry";
 
 WiFiClientSecure espClient;
