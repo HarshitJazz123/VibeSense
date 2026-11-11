@@ -36,7 +36,7 @@ Edge-ML predictive maintenance node. A XIAO ESP32-S3 reads 6 sensors on a small 
 
 **Pin map:** A0 = ACS712, A1 = MIC, D2 = DHT22, D3 = DS18B20, D4 = SDA, D5 = SCL, D6 = TCRT5000.
 
-![Top view](rig/images/rig_labeled_2.jpg)
+![Top view](rig/rig_labeled_2.jpg)
 
 ## ML
 
