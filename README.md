@@ -6,7 +6,7 @@ Edge-ML predictive maintenance node. A XIAO ESP32-S3 reads 6 sensors on a small 
 
 > **Status: working prototype (v1).** End-to-end pipeline works: sensors → on-device inference → MQTT → InfluxDB → Grafana. No custom PCB yet.
 
-**Demo video:** <paste LinkedIn post link here>
+**Demo video:** <https://lnkd.in/p/gC8qpW3Z>
 
 ## What it does
 
