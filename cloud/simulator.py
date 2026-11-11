@@ -4,15 +4,14 @@ import random
 import paho.mqtt.client as mqtt
 import os
 from dotenv import load_dotenv
+load_dotenv()
 
 # ============================================================
 # HiveMQ Configuration
 # ============================================================
 
-load_dotenv()
-
 BROKER_HOST = os.environ["MQTT_HOST"]
-BROKER_PORT = int(os.getenv["MQTT_HOST", "8883"])
+BROKER_PORT = int(os.getenv("MQTT_PORT", "8883"))
 USERNAME    = os.environ["MQTT_USER"]
 PASSWORD    = os.environ["MQTT_PASS"]
 INFLUXDB_TOKEN = os.environ["INFLUX_TOKEN"]
