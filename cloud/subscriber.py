@@ -3,16 +3,19 @@ import paho.mqtt.client as mqtt
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.client.write_api import WritePrecision
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # ============================================================
 # HiveMQ Configuration
 # ============================================================
 
-BROKER_HOST = "ec7cd44163ed405db4f161ea52525f11.s1.eu.hivemq.cloud"
-BROKER_PORT = 8883
+BROKER_HOST = os.environ["MQTT_HOST"]
+BROKER_PORT = int(os.getenv("MQTT_PORT", "8883"))
 
-USERNAME = "vibesense_node01"
-PASSWORD = "VibeSense2026!"
+USERNAME = os.environ["MQTT_USER"]
+PASSWORD = os.environ["MQTT_PASS"]
 
 TOPIC_TELEMETRY = "vibesense/node01/telemetry"
 
@@ -21,7 +24,7 @@ TOPIC_TELEMETRY = "vibesense/node01/telemetry"
 # ============================================================
 
 INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "g0325lri35pr71Df7AoF7PvA55lOm83Oqn-O7TBpMWsCF5vxarqYzG-JKzZVAA8sf4CnMZN4GZWTJWhV3yv8xg=="
+INFLUXDB_TOKEN = os.environ["INFLUX_TOKEN"]
 INFLUXDB_ORG = "vibesense-org"
 INFLUXDB_BUCKET = "vibesense"
 
