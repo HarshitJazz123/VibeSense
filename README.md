@@ -2,7 +2,7 @@
 
 Edge-ML predictive maintenance node. A XIAO ESP32-S3 reads 6 sensors on a small motor test rig, classifies the motor's condition **on the device** with a quantized TinyML model, and streams the result over MQTT/TLS to a cloud dashboard.
 
-![Rig overview](docs/images/rig_labeled_1.jpg)
+![Rig overview](rig/rig_labeled_1.jpg)
 
 > **Status: working prototype (v1).** End-to-end pipeline works: sensors → on-device inference → MQTT → InfluxDB → Grafana. No custom PCB yet.
 
@@ -36,7 +36,7 @@ Edge-ML predictive maintenance node. A XIAO ESP32-S3 reads 6 sensors on a small 
 
 **Pin map:** A0 = ACS712, A1 = MIC, D2 = DHT22, D3 = DS18B20, D4 = SDA, D5 = SCL, D6 = TCRT5000.
 
-![Top view](docs/images/rig_labeled_2.jpg)
+![Top view](rig/images/rig_labeled_2.jpg)
 
 ## ML
 
